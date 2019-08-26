@@ -24,10 +24,6 @@
 		4B3C27B3230C3BC1003DB395 /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C27B2230C3BC1003DB395 /* libiconv.2.4.0.tbd */; };
 		4B3C27B5230C3BD9003DB395 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C27B4230C3BD9003DB395 /* CoreMedia.framework */; };
 		4B3C27B7230C3BE7003DB395 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C27B6230C3BE7003DB395 /* VideoToolbox.framework */; };
-		4B3C27C6230C3EE6003DB395 /* ffmpeg_filter.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B3C27BA230C3EE5003DB395 /* ffmpeg_filter.c */; };
-		4B3C27CA230C3EE6003DB395 /* ffmpeg_opt.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B3C27BF230C3EE6003DB395 /* ffmpeg_opt.c */; };
-		4B3C27CE230C3EE6003DB395 /* ffmpeg.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B3C27C4230C3EE6003DB395 /* ffmpeg.c */; };
-		4B3C27D2230C415C003DB395 /* cmdutils.c in Sources */ = {isa = PBXBuildFile; fileRef = 4B3C27D0230C415C003DB395 /* cmdutils.c */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -165,13 +161,6 @@
 		4B3C27B2230C3BC1003DB395 /* libiconv.2.4.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.2.4.0.tbd; path = usr/lib/libiconv.2.4.0.tbd; sourceTree = SDKROOT; };
 		4B3C27B4230C3BD9003DB395 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		4B3C27B6230C3BE7003DB395 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
-		4B3C27BA230C3EE5003DB395 /* ffmpeg_filter.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ffmpeg_filter.c; sourceTree = "<group>"; };
-		4B3C27BF230C3EE6003DB395 /* ffmpeg_opt.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ffmpeg_opt.c; sourceTree = "<group>"; };
-		4B3C27C0230C3EE6003DB395 /* ffmpeg.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ffmpeg.h; sourceTree = "<group>"; };
-		4B3C27C4230C3EE6003DB395 /* ffmpeg.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = ffmpeg.c; sourceTree = "<group>"; };
-		4B3C27CF230C3F0B003DB395 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = config.h; sourceTree = "<group>"; };
-		4B3C27D0230C415C003DB395 /* cmdutils.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; path = cmdutils.c; sourceTree = "<group>"; };
-		4B3C27D1230C415C003DB395 /* cmdutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = cmdutils.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -216,7 +205,6 @@
 		4B3C2710230C39CA003DB395 /* ffmpeg */ = {
 			isa = PBXGroup;
 			children = (
-				4B3C27B8230C3E7A003DB395 /* tools */,
 				4B3C2711230C39CA003DB395 /* AppDelegate.h */,
 				4B3C2712230C39CA003DB395 /* AppDelegate.m */,
 				4B3C2714230C39CA003DB395 /* ViewController.h */,
@@ -433,20 +421,6 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
-		4B3C27B8230C3E7A003DB395 /* tools */ = {
-			isa = PBXGroup;
-			children = (
-				4B3C27D0230C415C003DB395 /* cmdutils.c */,
-				4B3C27D1230C415C003DB395 /* cmdutils.h */,
-				4B3C27CF230C3F0B003DB395 /* config.h */,
-				4B3C27BA230C3EE5003DB395 /* ffmpeg_filter.c */,
-				4B3C27BF230C3EE6003DB395 /* ffmpeg_opt.c */,
-				4B3C27C4230C3EE6003DB395 /* ffmpeg.c */,
-				4B3C27C0230C3EE6003DB395 /* ffmpeg.h */,
-			);
-			path = tools;
-			sourceTree = "<group>";
-		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -517,12 +491,8 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				4B3C27C6230C3EE6003DB395 /* ffmpeg_filter.c in Sources */,
-				4B3C27D2230C415C003DB395 /* cmdutils.c in Sources */,
 				4B3C2716230C39CA003DB395 /* ViewController.m in Sources */,
-				4B3C27CA230C3EE6003DB395 /* ffmpeg_opt.c in Sources */,
 				4B3C2721230C39CB003DB395 /* main.m in Sources */,
-				4B3C27CE230C3EE6003DB395 /* ffmpeg.c in Sources */,
 				4B3C2713230C39CA003DB395 /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
