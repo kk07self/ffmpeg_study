@@ -20,10 +20,15 @@
 		4B3C2733230C3A2E003DB395 /* libavdevice.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C272C230C3A2E003DB395 /* libavdevice.a */; };
 		4B3C2734230C3A2E003DB395 /* libswresample.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C272D230C3A2E003DB395 /* libswresample.a */; };
 		4B3C2735230C3A2E003DB395 /* libswscale.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C272E230C3A2E003DB395 /* libswscale.a */; };
-		4B3C27B1230C3BAD003DB395 /* libz.1.2.8.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C27B0230C3BAD003DB395 /* libz.1.2.8.tbd */; };
 		4B3C27B3230C3BC1003DB395 /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C27B2230C3BC1003DB395 /* libiconv.2.4.0.tbd */; };
 		4B3C27B5230C3BD9003DB395 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C27B4230C3BD9003DB395 /* CoreMedia.framework */; };
 		4B3C27B7230C3BE7003DB395 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C27B6230C3BE7003DB395 /* VideoToolbox.framework */; };
+		D757854E2321022500AA7191 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D757854D2321022500AA7191 /* libGPUImage.a */; };
+		D757854F232104E000AA7191 /* libz.1.2.8.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C27B0230C3BAD003DB395 /* libz.1.2.8.tbd */; };
+		D7578551232104EA00AA7191 /* libbz2.1.0.5.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D7578550232104EA00AA7191 /* libbz2.1.0.5.tbd */; };
+		D757855523210A5C00AA7191 /* test2.MOV in Resources */ = {isa = PBXBuildFile; fileRef = D757855223210A5900AA7191 /* test2.MOV */; };
+		D757855623210A5C00AA7191 /* test1.MOV in Resources */ = {isa = PBXBuildFile; fileRef = D757855323210A5A00AA7191 /* test1.MOV */; };
+		D757855723210A5C00AA7191 /* test.MP4 in Resources */ = {isa = PBXBuildFile; fileRef = D757855423210A5C00AA7191 /* test.MP4 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -161,6 +166,11 @@
 		4B3C27B2230C3BC1003DB395 /* libiconv.2.4.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.2.4.0.tbd; path = usr/lib/libiconv.2.4.0.tbd; sourceTree = SDKROOT; };
 		4B3C27B4230C3BD9003DB395 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		4B3C27B6230C3BE7003DB395 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		D757854D2321022500AA7191 /* libGPUImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGPUImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		D7578550232104EA00AA7191 /* libbz2.1.0.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.1.0.5.tbd; path = usr/lib/libbz2.1.0.5.tbd; sourceTree = SDKROOT; };
+		D757855223210A5900AA7191 /* test2.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = test2.MOV; sourceTree = "<group>"; };
+		D757855323210A5A00AA7191 /* test1.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = test1.MOV; sourceTree = "<group>"; };
+		D757855423210A5C00AA7191 /* test.MP4 */ = {isa = PBXFileReference; lastKnownFileType = file; path = test.MP4; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -168,10 +178,12 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D7578551232104EA00AA7191 /* libbz2.1.0.5.tbd in Frameworks */,
+				D757854F232104E000AA7191 /* libz.1.2.8.tbd in Frameworks */,
+				D757854E2321022500AA7191 /* libGPUImage.a in Frameworks */,
 				4B3C27B7230C3BE7003DB395 /* VideoToolbox.framework in Frameworks */,
 				4B3C27B5230C3BD9003DB395 /* CoreMedia.framework in Frameworks */,
 				4B3C27B3230C3BC1003DB395 /* libiconv.2.4.0.tbd in Frameworks */,
-				4B3C27B1230C3BAD003DB395 /* libz.1.2.8.tbd in Frameworks */,
 				4B3C2733230C3A2E003DB395 /* libavdevice.a in Frameworks */,
 				4B3C2735230C3A2E003DB395 /* libswscale.a in Frameworks */,
 				4B3C2730230C3A2E003DB395 /* libavfilter.a in Frameworks */,
@@ -205,6 +217,9 @@
 		4B3C2710230C39CA003DB395 /* ffmpeg */ = {
 			isa = PBXGroup;
 			children = (
+				D757855223210A5900AA7191 /* test2.MOV */,
+				D757855323210A5A00AA7191 /* test1.MOV */,
+				D757855423210A5C00AA7191 /* test.MP4 */,
 				4B3C2711230C39CA003DB395 /* AppDelegate.h */,
 				4B3C2712230C39CA003DB395 /* AppDelegate.m */,
 				4B3C2714230C39CA003DB395 /* ViewController.h */,
@@ -413,6 +428,8 @@
 		4B3C27AF230C3BAD003DB395 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D7578550232104EA00AA7191 /* libbz2.1.0.5.tbd */,
+				D757854D2321022500AA7191 /* libGPUImage.a */,
 				4B3C27B6230C3BE7003DB395 /* VideoToolbox.framework */,
 				4B3C27B4230C3BD9003DB395 /* CoreMedia.framework */,
 				4B3C27B2230C3BC1003DB395 /* libiconv.2.4.0.tbd */,
@@ -479,8 +496,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				4B3C271E230C39CB003DB395 /* LaunchScreen.storyboard in Resources */,
+				D757855623210A5C00AA7191 /* test1.MOV in Resources */,
+				D757855523210A5C00AA7191 /* test2.MOV in Resources */,
 				4B3C271B230C39CB003DB395 /* Assets.xcassets in Resources */,
 				4B3C2719230C39CA003DB395 /* Main.storyboard in Resources */,
+				D757855723210A5C00AA7191 /* test.MP4 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -575,6 +595,7 @@
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
+				VALID_ARCHS = arm64;
 			};
 			name = Debug;
 		};
@@ -628,6 +649,7 @@
 				MTL_FAST_MATH = YES;
 				SDKROOT = iphoneos;
 				VALIDATE_PRODUCT = YES;
+				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};
@@ -636,9 +658,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = HA5G797698;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/ffmpeg/include/**";
+				DEVELOPMENT_TEAM = 9U2KRZU6GT;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/../framework\"";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/ffmpeg/include",
+					"\"$(SRCROOT)/../framework/Source\"",
+					"\"$(SRCROOT)/../framework/Source/iOS\"/**",
+				);
 				INFOPLIST_FILE = ffmpeg/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -650,6 +678,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = KK.ffmpeg;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = arm64;
 			};
 			name = Debug;
 		};
@@ -658,9 +687,15 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = HA5G797698;
-				HEADER_SEARCH_PATHS = "$(PROJECT_DIR)/ffmpeg/include/**";
+				DEVELOPMENT_TEAM = 9U2KRZU6GT;
+				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/../framework\"";
+				HEADER_SEARCH_PATHS = (
+					"$(PROJECT_DIR)/ffmpeg/include",
+					"\"$(SRCROOT)/../framework/Source\"",
+					"\"$(SRCROOT)/../framework/Source/iOS\"/**",
+				);
 				INFOPLIST_FILE = ffmpeg/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 9.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -672,6 +707,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = KK.ffmpeg;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				TARGETED_DEVICE_FAMILY = "1,2";
+				VALID_ARCHS = arm64;
 			};
 			name = Release;
 		};
