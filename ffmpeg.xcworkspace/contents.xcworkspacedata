@@ -2,9 +2,9 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "group:framework/GPUImage.xcodeproj">
+      location = "group:ffmpeg/ffmpeg.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:ffmpeg/ffmpeg.xcodeproj">
+      location = "group:framework/GPUImage.xcodeproj">
    </FileRef>
 </Workspace>

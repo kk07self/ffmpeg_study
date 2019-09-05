@@ -93,6 +93,12 @@ static NSData * copyFrameData(UInt8 *src, int linesize, int width, int height)
 /* file */
 @property (nonatomic, strong) NSFileHandle *fileHandel;
 
+/** scale */
+@property (nonatomic, assign) struct SwsContext *swsContext;
+
+/** picture */
+@property (nonatomic, assign) AVPicture picture;
+
 @end
 
 @implementation ViewController
@@ -222,9 +228,7 @@ static NSData * copyFrameData(UInt8 *src, int linesize, int width, int height)
 
     // 解码器参数配置
     AVStream *stream = _in_format_context->streams[_v_stream_index];
-    _vdecodec_context->pix_fmt = AV_PIX_FMT_YUV420P;
-    _vdecodec_context->width = stream->codecpar->width;
-    _vdecodec_context->height = stream->codecpar->height;
+    
 //    _vdecodec_context->extradata_size = stream->codecpar->extradata_size;
 //    _vdecodec_context->extradata = malloc(_vdecodec_context->extradata_size);
 //    memcpy(_vdecodec_context->extradata, stream->codecpar->extradata, _vdecodec_context->extradata_size);
@@ -234,7 +238,12 @@ static NSData * copyFrameData(UInt8 *src, int linesize, int width, int height)
         NSLog(@"vdecodec context parameters error:%d", status);
         return;
     }
-
+    _vdecodec_context->pix_fmt = AV_PIX_FMT_YUV420P;
+//    _vdecodec_context->pix_fmt = AV_PIX_FMT_BGRA;
+    _vdecodec_context->width = 540;
+    _vdecodec_context->height = 960;
+    _vdecodec_context->bit_rate = 5000*1000;
+    
     // 打开解码器
     status = avcodec_open2(_vdecodec_context, _vdecodec, NULL);
     if (status < 0) {
@@ -276,7 +285,6 @@ static NSData * copyFrameData(UInt8 *src, int linesize, int width, int height)
 //            [self writePacket:pkt];
 //            _file
         }
-
         av_packet_unref(&pkt);
     }
     NSLog(@"--------完成");
@@ -343,24 +351,58 @@ static NSData * copyFrameData(UInt8 *src, int linesize, int width, int height)
 
         //这里解码后的AVFrame
         log_packet1(&(Base_TB), _vde_frame, "vdecode");
-//        [self decodec_video_successed:_vde_frame];
-        [self writeData];
+        
+        if (!_swsContext &&
+            ![self setupScaler]) {
+            NSLog(@"fail setup video scaler");
+            return;
+        }
+        
+        sws_scale(_swsContext,
+                  (const uint8_t **)_vde_frame->data,
+                  _vde_frame->linesize,
+                  0,
+                  _vdecodec_context->height,
+                  _picture.data,
+                  _picture.linesize);
+        
+        
+        [self decodec_video_successed:_picture];
+//        [self writeData];
     }
 }
 
-- (void)setupScaler {
+- (BOOL)setupScaler {
+    int status = avpicture_alloc(&_picture,
+                                    AV_PIX_FMT_RGBA,
+                                    _vdecodec_context->width,
+                                    _vdecodec_context->height) == 0;
     
+    if (status < 0)
+        return NO;
+    
+    _swsContext = sws_getCachedContext(_swsContext,
+                                       _vdecodec_context->width,
+                                       _vdecodec_context->height,
+                                       _vdecodec_context->pix_fmt,
+                                       _vdecodec_context->width,
+                                       _vdecodec_context->height,
+                                       AV_PIX_FMT_RGBA,
+                                       SWS_FAST_BILINEAR,
+                                       NULL, NULL, NULL);
+    
+    return _swsContext != NULL;
 }
 
 // 解码成功回调
-- (void)decodec_video_successed:(AVFrame *)frame {
+- (void)decodec_video_successed:(AVPicture)picture {
     AVStream *stream = self.in_format_context->streams[_v_stream_index];
     CGSize size = CGSizeMake(stream->codecpar->width, stream->codecpar->height);
     if (!_rawDataInput) {
-        _rawDataInput = [[GPUImageRawDataInput alloc] initWithBytes:(GLubyte *)(frame->data[0]) size:size];
+        _rawDataInput = [[GPUImageRawDataInput alloc] initWithBytes:(GLubyte *)(picture.data[0]) size:size];
         [_rawDataInput addTarget:_filterView];
     } else {
-        [_rawDataInput updateDataFromBytes:(GLubyte *)(frame->data[0]) size:size];
+        [_rawDataInput updateDataFromBytes:(GLubyte *)(picture.data[0]) size:size];
     }
     [_rawDataInput processData];
     [NSThread sleepForTimeInterval:0.03];
@@ -375,11 +417,12 @@ static NSData * copyFrameData(UInt8 *src, int linesize, int width, int height)
 
 - (NSFileHandle *)fileHandel {
     if (!_fileHandel) {
-        NSString *cachePath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
-        NSString *filePath = [cachePath stringByAppendingPathComponent:[NSString stringWithFormat:@"com-%ld.yuv", (NSInteger)[[NSDate date] timeIntervalSince1970]]];
-        if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
-            [[NSFileManager defaultManager] createFileAtPath:filePath contents:nil attributes: nil];
-        }
+//        NSString *cachePath = [NSSearchPathForDirectoriesInDomains(NSCachesDirectory, NSUserDomainMask, YES) lastObject];
+//        NSString *filePath = [cachePath stringByAppendingPathComponent:[NSString stringWithFormat:@"com-%ld.yuv", (NSInteger)[[NSDate date] timeIntervalSince1970]]];
+        NSString *filePath = @"/Users/kk/Desktop/com.yuv";
+//        if (![[NSFileManager defaultManager] fileExistsAtPath:filePath]) {
+//            [[NSFileManager defaultManager] createFileAtPath:filePath contents:nil attributes: nil];
+//        }
         _fileHandel = [NSFileHandle fileHandleForWritingAtPath:filePath];
     }
     return _fileHandel;
