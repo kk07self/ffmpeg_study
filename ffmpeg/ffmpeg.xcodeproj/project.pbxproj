@@ -23,6 +23,14 @@
 		4B3C27B3230C3BC1003DB395 /* libiconv.2.4.0.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C27B2230C3BC1003DB395 /* libiconv.2.4.0.tbd */; };
 		4B3C27B5230C3BD9003DB395 /* CoreMedia.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C27B4230C3BD9003DB395 /* CoreMedia.framework */; };
 		4B3C27B7230C3BE7003DB395 /* VideoToolbox.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C27B6230C3BE7003DB395 /* VideoToolbox.framework */; };
+		4B8EEC2E2322AEDE0078FC10 /* Decodec.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8EEC2D2322AEDE0078FC10 /* Decodec.m */; };
+		4B8EEC312322AEF10078FC10 /* VideoDecodec.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8EEC302322AEF10078FC10 /* VideoDecodec.m */; };
+		4B8EEC342322AEFD0078FC10 /* AudioDecodec.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8EEC332322AEFD0078FC10 /* AudioDecodec.m */; };
+		4B8EEC372322AF1E0078FC10 /* DemuxMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8EEC362322AF1E0078FC10 /* DemuxMedia.m */; };
+		4B8EEC3A2322AF320078FC10 /* Codec.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8EEC392322AF320078FC10 /* Codec.m */; };
+		4B8EEC402322AF510078FC10 /* AudioCodec.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8EEC3F2322AF510078FC10 /* AudioCodec.m */; };
+		4B8EEC432322AF5F0078FC10 /* MuxMedia.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8EEC422322AF5F0078FC10 /* MuxMedia.m */; };
+		4B8EEC462322B0950078FC10 /* DecodeOptions.m in Sources */ = {isa = PBXBuildFile; fileRef = 4B8EEC452322B0950078FC10 /* DecodeOptions.m */; };
 		D757854E2321022500AA7191 /* libGPUImage.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D757854D2321022500AA7191 /* libGPUImage.a */; };
 		D757854F232104E000AA7191 /* libz.1.2.8.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = 4B3C27B0230C3BAD003DB395 /* libz.1.2.8.tbd */; };
 		D7578551232104EA00AA7191 /* libbz2.1.0.5.tbd in Frameworks */ = {isa = PBXBuildFile; fileRef = D7578550232104EA00AA7191 /* libbz2.1.0.5.tbd */; };
@@ -166,6 +174,24 @@
 		4B3C27B2230C3BC1003DB395 /* libiconv.2.4.0.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libiconv.2.4.0.tbd; path = usr/lib/libiconv.2.4.0.tbd; sourceTree = SDKROOT; };
 		4B3C27B4230C3BD9003DB395 /* CoreMedia.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreMedia.framework; path = System/Library/Frameworks/CoreMedia.framework; sourceTree = SDKROOT; };
 		4B3C27B6230C3BE7003DB395 /* VideoToolbox.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = VideoToolbox.framework; path = System/Library/Frameworks/VideoToolbox.framework; sourceTree = SDKROOT; };
+		4B8EEC2C2322AEDE0078FC10 /* Decodec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Decodec.h; sourceTree = "<group>"; };
+		4B8EEC2D2322AEDE0078FC10 /* Decodec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Decodec.m; sourceTree = "<group>"; };
+		4B8EEC2F2322AEF10078FC10 /* VideoDecodec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoDecodec.h; sourceTree = "<group>"; };
+		4B8EEC302322AEF10078FC10 /* VideoDecodec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoDecodec.m; sourceTree = "<group>"; };
+		4B8EEC322322AEFD0078FC10 /* AudioDecodec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioDecodec.h; sourceTree = "<group>"; };
+		4B8EEC332322AEFD0078FC10 /* AudioDecodec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioDecodec.m; sourceTree = "<group>"; };
+		4B8EEC352322AF1E0078FC10 /* DemuxMedia.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DemuxMedia.h; sourceTree = "<group>"; };
+		4B8EEC362322AF1E0078FC10 /* DemuxMedia.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DemuxMedia.m; sourceTree = "<group>"; };
+		4B8EEC382322AF320078FC10 /* Codec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Codec.h; sourceTree = "<group>"; };
+		4B8EEC392322AF320078FC10 /* Codec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = Codec.m; sourceTree = "<group>"; };
+		4B8EEC3B2322AF460078FC10 /* VideoCodec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoCodec.h; sourceTree = "<group>"; };
+		4B8EEC3E2322AF510078FC10 /* AudioCodec.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AudioCodec.h; sourceTree = "<group>"; };
+		4B8EEC3F2322AF510078FC10 /* AudioCodec.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AudioCodec.m; sourceTree = "<group>"; };
+		4B8EEC412322AF5F0078FC10 /* MuxMedia.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = MuxMedia.h; sourceTree = "<group>"; };
+		4B8EEC422322AF5F0078FC10 /* MuxMedia.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = MuxMedia.m; sourceTree = "<group>"; };
+		4B8EEC442322B0950078FC10 /* DecodeOptions.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DecodeOptions.h; sourceTree = "<group>"; };
+		4B8EEC452322B0950078FC10 /* DecodeOptions.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DecodeOptions.m; sourceTree = "<group>"; };
+		4B8EEC472322B46B0078FC10 /* CodecErrorCode.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = CodecErrorCode.h; sourceTree = "<group>"; };
 		D757854D2321022500AA7191 /* libGPUImage.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; path = libGPUImage.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		D7578550232104EA00AA7191 /* libbz2.1.0.5.tbd */ = {isa = PBXFileReference; lastKnownFileType = "sourcecode.text-based-dylib-definition"; name = libbz2.1.0.5.tbd; path = usr/lib/libbz2.1.0.5.tbd; sourceTree = SDKROOT; };
 		D757855223210A5900AA7191 /* test2.MOV */ = {isa = PBXFileReference; lastKnownFileType = video.quicktime; path = test2.MOV; sourceTree = "<group>"; };
@@ -217,6 +243,7 @@
 		4B3C2710230C39CA003DB395 /* ffmpeg */ = {
 			isa = PBXGroup;
 			children = (
+				4B8EEC2B2322AEB70078FC10 /* Codec */,
 				D757855223210A5900AA7191 /* test2.MOV */,
 				D757855323210A5A00AA7191 /* test1.MOV */,
 				D757855423210A5C00AA7191 /* test.MP4 */,
@@ -438,6 +465,31 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		4B8EEC2B2322AEB70078FC10 /* Codec */ = {
+			isa = PBXGroup;
+			children = (
+				4B8EEC2C2322AEDE0078FC10 /* Decodec.h */,
+				4B8EEC2D2322AEDE0078FC10 /* Decodec.m */,
+				4B8EEC2F2322AEF10078FC10 /* VideoDecodec.h */,
+				4B8EEC302322AEF10078FC10 /* VideoDecodec.m */,
+				4B8EEC322322AEFD0078FC10 /* AudioDecodec.h */,
+				4B8EEC332322AEFD0078FC10 /* AudioDecodec.m */,
+				4B8EEC352322AF1E0078FC10 /* DemuxMedia.h */,
+				4B8EEC362322AF1E0078FC10 /* DemuxMedia.m */,
+				4B8EEC382322AF320078FC10 /* Codec.h */,
+				4B8EEC392322AF320078FC10 /* Codec.m */,
+				4B8EEC3B2322AF460078FC10 /* VideoCodec.h */,
+				4B8EEC3E2322AF510078FC10 /* AudioCodec.h */,
+				4B8EEC3F2322AF510078FC10 /* AudioCodec.m */,
+				4B8EEC412322AF5F0078FC10 /* MuxMedia.h */,
+				4B8EEC422322AF5F0078FC10 /* MuxMedia.m */,
+				4B8EEC442322B0950078FC10 /* DecodeOptions.h */,
+				4B8EEC452322B0950078FC10 /* DecodeOptions.m */,
+				4B8EEC472322B46B0078FC10 /* CodecErrorCode.h */,
+			);
+			path = Codec;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -511,9 +563,17 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				4B8EEC3A2322AF320078FC10 /* Codec.m in Sources */,
+				4B8EEC342322AEFD0078FC10 /* AudioDecodec.m in Sources */,
+				4B8EEC462322B0950078FC10 /* DecodeOptions.m in Sources */,
+				4B8EEC372322AF1E0078FC10 /* DemuxMedia.m in Sources */,
 				4B3C2716230C39CA003DB395 /* ViewController.m in Sources */,
 				4B3C2721230C39CB003DB395 /* main.m in Sources */,
+				4B8EEC402322AF510078FC10 /* AudioCodec.m in Sources */,
 				4B3C2713230C39CA003DB395 /* AppDelegate.m in Sources */,
+				4B8EEC2E2322AEDE0078FC10 /* Decodec.m in Sources */,
+				4B8EEC432322AF5F0078FC10 /* MuxMedia.m in Sources */,
+				4B8EEC312322AEF10078FC10 /* VideoDecodec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
