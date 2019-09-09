@@ -12,19 +12,6 @@
 NS_ASSUME_NONNULL_BEGIN
 
 
-@interface AVPacketResult : NSObject
-
-/** 是否为空 */
-@property (nonatomic, assign) BOOL isNull;
-
-/** 类型 */
-@property (nonatomic, assign) enum AVMediaType mediaType;
-
-/** packet */
-@property (nonatomic, assign) AVPacket packet;
-
-@end
-
 @interface DemuxMedia : NSObject
 
 - (instancetype)initWithFilePath:(NSString *)filePath;
@@ -32,8 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 /** format */
 @property (nonatomic, assign, readonly) AVFormatContext *formatContext;
 
+- (void)readPacket:(void (^)(BOOL isVideoPacket, BOOL isReadFinished, AVPacket packet))handler;
 
-- (AVPacketResult *)getMediaoPacket;
 - (int)getVideoStreamIndex;
 
 @end

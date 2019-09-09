@@ -16,10 +16,6 @@ static const int kCodecHeight1080        = 1080;
 static const int kCodecSupportMaxWidth   = 3840;
 static const int kCodecSupportMaxHeight  = 2160;
 
-@implementation AVPacketResult
-
-@end
-
 
 @interface DemuxMedia()
 {
@@ -28,49 +24,73 @@ static const int kCodecSupportMaxHeight  = 2160;
     
     // video
     int _video_width, _video_height, _video_fps;
+    
+    dispatch_queue_t _demuxQueue;
 }
 
 @end
 
 @implementation DemuxMedia
 
+//+ (void)initialize {
+//    static dispatch_once_t onceToken;
+//    dispatch_once(&onceToken, ^{
+//        av_register_all();
+//    });
+//}
+
 - (instancetype)initWithFilePath:(NSString *)filePath {
     if (self = [super init]) {
-        _formatContext = [self preparFormatContext:filePath];
-        [self preparVideoStreams];
-        [self preparAudioStreams];
+        [self preparFormatContext:filePath];
+//        [self preparVideoStreams];
+//        [self preparAudioStreams];
+        _demuxQueue = dispatch_queue_create("parse_queue", DISPATCH_QUEUE_SERIAL);
     }
     return self;
 }
 
 // formatContext
-- (AVFormatContext *)preparFormatContext:(NSString *)filePath {
+- (void)preparFormatContext:(NSString *)filePath {
     if (filePath == NULL || filePath.length == 0) {
         NSLog(@" file is null --- code: %ld", CodecErrorCodeNullFilePath);
-        return NULL;
+        return;
     }
     
     AVFormatContext  *formatContext = NULL;
     AVDictionary     *opts          = NULL;
     
-    av_dict_set(&opts, "timeout", "1000000", 0);//设置超时1秒
+    av_dict_set(&opts, "timeout", "3000000", 0);//设置超时1秒
     formatContext = avformat_alloc_context();
-    BOOL isSuccess = avformat_open_input(&formatContext, [filePath cStringUsingEncoding:NSUTF8StringEncoding], NULL, &opts) < 0 ? NO : YES;
+    const char *in_filename = [filePath cStringUsingEncoding:NSASCIIStringEncoding];
+    BOOL isSuccess = avformat_open_input(&formatContext, in_filename, NULL, &opts) < 0 ? NO : YES;
     av_dict_free(&opts);
     if (!isSuccess) {
         if (formatContext) {
             avformat_free_context(formatContext);
         }
         NSLog(@" formatContext create error --- code: %ld", CodecErrorCodeFormatContextNotInit);
-        return NULL;
+        return;
     }
     
     if (avformat_find_stream_info(formatContext, NULL) < 0) {
         avformat_close_input(&formatContext);
         NSLog(@" find stream null --- code: %ld", CodecErrorCodeStreamNotFind);
-        return NULL;
+        return;
     }
-    return formatContext;
+    av_dump_format(formatContext, 0, in_filename, 0);
+    _formatContext = formatContext;
+    
+    for (int i = 0; i < formatContext->nb_streams; i++) {
+        AVStream *in_stream = formatContext->streams[i];
+        AVCodecParameters *in_codecpar = in_stream->codecpar;
+        if(in_codecpar->codec_type == AVMEDIA_TYPE_VIDEO){
+            _video_stream_index = i;
+        }
+        if(in_codecpar->codec_type == AVMEDIA_TYPE_AUDIO){
+            _audio_stream_index = i;
+        }
+    }
+    
 }
 
 
@@ -223,28 +243,28 @@ static const int kCodecSupportMaxHeight  = 2160;
 }
 
 #pragma mark - demux
-- (AVPacketResult *)getMediaoPacket {
-    AVPacketResult *result = [[AVPacketResult alloc] init];
-    result.isNull = YES;
-    if (!_formatContext) {
-        NSLog(@"get packet error with null formatContext --- code: %ld", CodecErrorCodeGetPacketWithOutFormatConext);
-        return result;
-    }
-    
-    AVPacket packet;
-    av_init_packet(&packet);
-    int status = av_read_frame(_formatContext, &packet);
-    if (status < 0 || packet.size < 0) {
-        // release
-        return result;
-    }
-    result.isNull = NO;
-//    result.mediaType = packet.stream_index == _video_stream_index ? AVMEDIA_TYPE_VIDEO : AVMEDIA_TYPE_AUDIO;
-    result.mediaType = AVMEDIA_TYPE_VIDEO;
-    result.packet = packet;
-//    av_packet_unref(&packet);
-    return result;
+
+- (void)readPacket:(void (^)(BOOL, BOOL, AVPacket))handler {
+    dispatch_async(_demuxQueue, ^{
+        AVPacket packet;
+        av_init_packet(&packet);
+        int status = av_read_frame(self.formatContext, &packet);
+//        NSLog(@"video_stream_index:%d\n audio_stream_index:%d\npacke_stream_index:%d", _video_stream_index, _audio_stream_index, packet.stream_index);
+//        NSLog(@"----------------------------------------------");
+        if (status < 0 || packet.size < 0) {
+            // release
+            if (handler) {
+                handler(NO, YES, packet);
+            }
+            return ;
+        }
+        if (handler) {
+            handler(packet.stream_index == self->_video_stream_index ? YES : NO, NO, packet);
+        }
+        av_packet_unref(&packet);
+    });
 }
+
 
 - (int)getVideoStreamIndex; {
     return _video_stream_index;

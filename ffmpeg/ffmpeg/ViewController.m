@@ -37,6 +37,9 @@
 /** context */
 @property (nonatomic, strong) CIContext *context;
 
+/* desc */
+@property (nonatomic, strong) dispatch_source_t timer;
+
 @end
 
 @implementation ViewController
@@ -60,17 +63,19 @@
 }
 
 - (void)play {
-    while (_isplaying) {
+    dispatch_source_set_event_handler(self.timer, ^{
+        NSLog(@"----isplaying");
         CVPixelBufferRef pixelBuffer = [self.decodec getPixelBuffer];
-        dispatch_async(dispatch_get_main_queue(), ^{
-            
+        if (pixelBuffer) {
             CIImage *ciImage = [CIImage imageWithCVPixelBuffer:pixelBuffer];
-            CGImageRef cgImage = [self.context createCGImage:ciImage fromRect:ciImage.extent];
-            self.previewLayer.contents = (__bridge id _Nullable)cgImage;
-            CFRelease(cgImage);
-        });
-        [NSThread sleepForTimeInterval:0.03];
-    }
+            dispatch_async(dispatch_get_main_queue(), ^{
+                CGImageRef cgImage = [self.context createCGImage:ciImage fromRect:ciImage.extent];
+                self.previewLayer.contents = (__bridge id _Nullable)cgImage;
+                CFRelease(cgImage);
+            });
+        }
+    });
+    dispatch_resume(_timer);
 }
 
 
@@ -89,6 +94,15 @@
         _context = [CIContext contextWithEAGLContext:eagl options:@{kCIContextWorkingColorSpace:[NSNull null]}];
     }
     return _context;
+}
+
+- (dispatch_source_t)timer {
+    if (!_timer) {
+        dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
+        _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
+        dispatch_source_set_timer(_timer, DISPATCH_TIME_NOW, 25*NSEC_PER_MSEC, 0);
+    }
+    return _timer;
 }
 
 @end

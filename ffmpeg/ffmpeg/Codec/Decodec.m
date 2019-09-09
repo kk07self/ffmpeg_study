@@ -42,6 +42,9 @@
 /** 信号量锁 */
 @property (strong, nonatomic) dispatch_semaphore_t semaphore;
 
+/* 缓存队列 */
+@property (nonatomic, strong) dispatch_queue_t cacheQueue;
+
 @end
 
 @implementation Decodec
@@ -50,10 +53,31 @@
     if (self = [super init]) {
         _options = options;
         _filePath = filePath;
+        _cacheQueue = dispatch_queue_create("_cacheQueue", DISPATCH_QUEUE_SERIAL);
+        [self demux];
+        [self videoDecodec];
     }
     return self;
 }
 
+
+- (void)startDecode {
+    [self.demux readPacket:^(BOOL isVideoPacket, BOOL isReadFinished, AVPacket packet) {
+        // 获取packect
+        [self.demux readPacket:^(BOOL isVideoPacket, BOOL isReadFinished, AVPacket packet) {
+            if (isReadFinished) {
+                return ;
+            }
+            if (isVideoPacket) {
+                // 解码
+                CVPixelBufferRef pixbuffer = [self.videoDecodec decodecPacket:packet];
+                if (self.delegate && [self.delegate respondsToSelector:@selector(decodecVideWitd:samplebuffer:)]) {
+                    
+                }
+            }
+        }];
+    }];
+}
 
 - (CVPixelBufferRef)getPixelBuffer {
     if (self.frames.count > 0) {
@@ -84,33 +108,11 @@
 
 - (void)cachecPixelBuffer {
     
-//    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+    dispatch_async(_cacheQueue, ^{
         while (self.frames.count < 5) {
-            // 获取packect
-            AVPacketResult *result = [self.demux getMediaoPacket];
-            if (result.isNull) {
-                self.isFinished = YES;
-                return;
-            }
             
-            // 暂时只解码视频帧
-            if (result.mediaType != AVMEDIA_TYPE_VIDEO) {
-                return;
-            }
-            
-            // 解码
-            CVPixelBufferRef pixbuffer = [self.videoDecodec decodecPacket:result.packet];
-            if (pixbuffer == NULL) {
-                continue;
-            }
-            // 放到缓存中
-            // 需要枷锁
-            dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-            [self.frames addObject:(__bridge id _Nonnull)(pixbuffer)];
-            // 解锁
-            dispatch_semaphore_signal(self.semaphore);
         }
-//    });
+    });
 }
 
 

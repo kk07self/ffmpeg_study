@@ -185,7 +185,7 @@ int av_compare_ts(int64_t ts_a, AVRational tb_a, int64_t ts_b, AVRational tb_b);
  * av_compare_mod(0x11, 0x02, 0x20) > 0 // since 0x11 % 0x20 (0x11) > 0x02 % 0x20 (0x02)
  * @endcode
  *
- * @param a,b Operands
+ * @param a,b Operands
  * @param mod Divisor; must be a power of 2
  * @return
  *         - a negative value if `a % mod < b % mod`

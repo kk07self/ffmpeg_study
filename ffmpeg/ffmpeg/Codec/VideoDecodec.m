@@ -136,31 +136,25 @@ static int init_hardware_decoder(AVCodecContext *ctx, const enum AVHWDeviceType 
     // 发送解码j前数据
     avcodec_send_packet(_videoDecodecContext, &packet);
     // 接收解码器后的数据
-    int status = avcodec_receive_frame(_videoDecodecContext, _videoFrame);
-    if (status <= 0) {
-        return NULL;
+    while (0 == avcodec_receive_frame(_videoDecodecContext, _videoFrame))
+    {
+        CVPixelBufferRef pixelBuffer = (CVPixelBufferRef)_videoFrame->data[3];
+        CMTime presentationTimeStamp = kCMTimeInvalid;
+        int64_t originPTS = _videoFrame->pts;
+        int64_t newPTS    = originPTS - baseTime;
+        presentationTimeStamp = CMTimeMakeWithSeconds(current_timestamp + newPTS * av_q2d(videoStream->time_base) , fps);
+        CMSampleBufferRef sampleBufferRef = [self convertCVImageBufferRefToCMSampleBufferRef:(CVPixelBufferRef)pixelBuffer
+                                                                   withPresentationTimeStamp:presentationTimeStamp];
+
+        if (sampleBufferRef) {
+            if ([self.delegate respondsToSelector:@selector(getDecodeVideoDataByFFmpeg:)]) {
+                [self.delegate getDecodeVideoDataByFFmpeg:sampleBufferRef];
+            }
+
+            CFRelease(sampleBufferRef);
+        }
     }
-    return (CVPixelBufferRef)_videoFrame->data[3];
-    
-//    while (0 == avcodec_receive_frame(_videoDecodecContext, _videoFrame))
-//    {
-//        CVPixelBufferRef pixelBuffer = (CVPixelBufferRef)_videoFrame->data[3];
-//        CMTime presentationTimeStamp = kCMTimeInvalid;
-//        int64_t originPTS = _videoFrame->pts;
-//        int64_t newPTS    = originPTS - baseTime;
-//        presentationTimeStamp = CMTimeMakeWithSeconds(current_timestamp + newPTS * av_q2d(videoStream->time_base) , fps);
-//        CMSampleBufferRef sampleBufferRef = [self convertCVImageBufferRefToCMSampleBufferRef:(CVPixelBufferRef)pixelBuffer
-//                                                                   withPresentationTimeStamp:presentationTimeStamp];
-//
-//        if (sampleBufferRef) {
-//            if ([self.delegate respondsToSelector:@selector(getDecodeVideoDataByFFmpeg:)]) {
-//                [self.delegate getDecodeVideoDataByFFmpeg:sampleBufferRef];
-//            }
-//
-//            CFRelease(sampleBufferRef);
-//        }
-//    }
-//    return NULL;
+    return NULL;
 }
 
 - (Float64)getCurrentTimestamp {
