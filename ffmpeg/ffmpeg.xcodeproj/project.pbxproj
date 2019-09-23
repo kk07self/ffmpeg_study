@@ -38,6 +38,8 @@
 		D757855623210A5C00AA7191 /* test1.MOV in Resources */ = {isa = PBXBuildFile; fileRef = D757855323210A5A00AA7191 /* test1.MOV */; };
 		D757855723210A5C00AA7191 /* test.MP4 in Resources */ = {isa = PBXBuildFile; fileRef = D757855423210A5C00AA7191 /* test.MP4 */; };
 		D7677FE023263F240012558E /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D7677FDF23263F240012558E /* libx264.a */; };
+		D77F72962338D16000642A69 /* DisplayGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = D77F72952338D16000642A69 /* DisplayGLView.m */; };
+		D77F72992338D25D00642A69 /* VideoFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = D77F72982338D25D00642A69 /* VideoFrame.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -201,6 +203,10 @@
 		D7677FDC23263F240012558E /* x264_config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x264_config.h; sourceTree = "<group>"; };
 		D7677FDD23263F240012558E /* x264.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = x264.h; sourceTree = "<group>"; };
 		D7677FDF23263F240012558E /* libx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libx264.a; sourceTree = "<group>"; };
+		D77F72942338D16000642A69 /* DisplayGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DisplayGLView.h; sourceTree = "<group>"; };
+		D77F72952338D16000642A69 /* DisplayGLView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DisplayGLView.m; sourceTree = "<group>"; };
+		D77F72972338D25D00642A69 /* VideoFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoFrame.h; sourceTree = "<group>"; };
+		D77F72982338D25D00642A69 /* VideoFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoFrame.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -264,6 +270,8 @@
 				4B3C271C230C39CB003DB395 /* LaunchScreen.storyboard */,
 				4B3C271F230C39CB003DB395 /* Info.plist */,
 				4B3C2720230C39CB003DB395 /* main.m */,
+				D77F72942338D16000642A69 /* DisplayGLView.h */,
+				D77F72952338D16000642A69 /* DisplayGLView.m */,
 			);
 			path = ffmpeg;
 			sourceTree = "<group>";
@@ -492,6 +500,8 @@
 				4B8EEC442322B0950078FC10 /* DecodeOptions.h */,
 				4B8EEC452322B0950078FC10 /* DecodeOptions.m */,
 				4B8EEC472322B46B0078FC10 /* CodecErrorCode.h */,
+				D77F72972338D25D00642A69 /* VideoFrame.h */,
+				D77F72982338D25D00642A69 /* VideoFrame.m */,
 			);
 			path = Codec;
 			sourceTree = "<group>";
@@ -599,12 +609,14 @@
 				4B8EEC342322AEFD0078FC10 /* AudioDecodec.m in Sources */,
 				4B8EEC462322B0950078FC10 /* DecodeOptions.m in Sources */,
 				4B8EEC372322AF1E0078FC10 /* DemuxMedia.m in Sources */,
+				D77F72992338D25D00642A69 /* VideoFrame.m in Sources */,
 				4B3C2716230C39CA003DB395 /* ViewController.m in Sources */,
 				4B3C2721230C39CB003DB395 /* main.m in Sources */,
 				4B8EEC402322AF510078FC10 /* AudioCodec.m in Sources */,
 				4B3C2713230C39CA003DB395 /* AppDelegate.m in Sources */,
 				4B8EEC2E2322AEDE0078FC10 /* Decodec.m in Sources */,
 				4B8EEC432322AF5F0078FC10 /* MuxMedia.m in Sources */,
+				D77F72962338D16000642A69 /* DisplayGLView.m in Sources */,
 				4B8EEC312322AEF10078FC10 /* VideoDecodec.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
