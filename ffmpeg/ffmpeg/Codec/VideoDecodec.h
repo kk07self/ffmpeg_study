@@ -9,6 +9,7 @@
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
 #include "libavformat/avformat.h"
+#include "libswscale/swscale.h"
 
 NS_ASSUME_NONNULL_BEGIN
 

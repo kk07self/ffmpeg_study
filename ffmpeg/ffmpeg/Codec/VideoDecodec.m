@@ -43,6 +43,9 @@ static int init_hardware_decoder(AVCodecContext *ctx, const enum AVHWDeviceType 
 /** video stream index */
 @property (nonatomic, assign) int videoStreamIndex;
 
+/* desc */
+@property (nonatomic, assign) struct SwsContext *swsContext;
+
 @end
 
 
@@ -216,6 +219,21 @@ static int init_hardware_decoder(AVCodecContext *ctx, const enum AVHWDeviceType 
     CMClockRef hostClockRef = CMClockGetHostTimeClock();
     CMTime hostTime = CMClockGetTime(hostClockRef);
     return CMTimeGetSeconds(hostTime);
+}
+
+- (struct SwsContext *)swsContext {
+    if (_swsContext == NULL) {
+        _swsContext = sws_getCachedContext(_swsContext,
+        _videoDecodecContext->width,
+        _videoDecodecContext->height,
+        _videoDecodecContext->pix_fmt,
+        _videoDecodecContext->width,
+        _videoDecodecContext->height,
+        AV_PIX_FMT_RGBA,
+        SWS_FAST_BILINEAR,
+        NULL, NULL, NULL);
+    }
+    return _swsContext;
 }
 
 @end
