@@ -18,7 +18,7 @@
 #include "libswresample/swresample.h"
 #include "libavutil/opt.h"
 
-@interface Decodec()
+@interface Decodec()<VideoDecodecDelegate>
 
 /** demux */
 @property (nonatomic, strong) DemuxMedia *demux;
@@ -55,29 +55,37 @@
         _filePath = filePath;
         _cacheQueue = dispatch_queue_create("_cacheQueue", DISPATCH_QUEUE_SERIAL);
         [self demux];
-        [self videoDecodec];
+        self.videoDecodec.delegate = self;
     }
     return self;
 }
 
 
 - (void)startDecode {
+    // 获取packect
     [self.demux readPacket:^(BOOL isVideoPacket, BOOL isReadFinished, AVPacket packet) {
-        // 获取packect
-        [self.demux readPacket:^(BOOL isVideoPacket, BOOL isReadFinished, AVPacket packet) {
-            if (isReadFinished) {
-                return ;
-            }
-            if (isVideoPacket) {
-                // 解码
-                CVPixelBufferRef pixbuffer = [self.videoDecodec decodecPacket:packet];
-                if (self.delegate && [self.delegate respondsToSelector:@selector(decodecVideWitd:samplebuffer:)]) {
-                    
-                }
-            }
-        }];
+        if (isReadFinished) {
+            return ;
+        }
+        if (isVideoPacket) {
+            // 解码
+            [self.videoDecodec decodecPacket:packet];
+        }
     }];
 }
+
+- (void)videoDecodec:(VideoDecodec *)videoDecodec getVideoSampleBuffer:(CMSampleBufferRef)samplebuffer {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(decodecVide:samplebuffer:)]) {
+        [self.delegate decodecVide:self samplebuffer:samplebuffer];
+    }
+}
+
+- (void)videoDecodec:(VideoDecodec *)videoDecodec getVideoPixelBuffer:(CVPixelBufferRef)pixelBuffer {
+    if (self.delegate && [self.delegate respondsToSelector:@selector(decodecVide:pixelbuffer:)]) {
+        [self.delegate decodecVide:self pixelbuffer:pixelBuffer];
+    }
+}
+
 
 - (CVPixelBufferRef)getPixelBuffer {
     if (self.frames.count > 0) {

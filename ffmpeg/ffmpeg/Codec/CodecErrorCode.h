@@ -38,6 +38,8 @@ typedef enum : NSInteger {
     CodecErrorCodeVideoFrameAllocError = 1002007,
     
     // 1003··· videoDecode
+    CodeErrorCodeVideoDecodeCreateVideoFormatError = 1003000,
+    CodeErrorCodeVideoDecodeCreateSampleBufferError = 1003001,
     
 } CodecErrorCode;
 

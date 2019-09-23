@@ -26,6 +26,11 @@ static int init_hardware_decoder(AVCodecContext *ctx, const enum AVHWDeviceType 
 
 @interface VideoDecodec()
 
+{
+    uint64_t base_time;
+    BOOL isFindIDR;
+}
+
 /** format context */
 @property (nonatomic, assign) AVFormatContext *formatContext;
 
@@ -129,9 +134,15 @@ static int init_hardware_decoder(AVCodecContext *ctx, const enum AVHWDeviceType 
 #pragma mark - decodec
 
 - (CVPixelBufferRef)decodecPacket:(AVPacket)packet; {
-//    Float64 current_timestamp = [self getCurrentTimestamp];
-//    AVStream *videoStream = _formatContext->streams[_videoStreamIndex];
-//    int fps = get_avstream_fps_timeBase(videoStream);
+    
+    if (packet.flags == 1 && isFindIDR == NO) {
+        isFindIDR = YES;
+        base_time = _videoFrame->pts;
+    }
+    
+    Float64 current_timestamp = [self getCurrentTimestamp];
+    AVStream *videoStream = _formatContext->streams[_videoStreamIndex];
+    int fps = get_avstream_fps_timeBase(videoStream);
     
     // 发送解码j前数据
     avcodec_send_packet(_videoDecodecContext, &packet);
@@ -139,22 +150,65 @@ static int init_hardware_decoder(AVCodecContext *ctx, const enum AVHWDeviceType 
     while (0 == avcodec_receive_frame(_videoDecodecContext, _videoFrame))
     {
         CVPixelBufferRef pixelBuffer = (CVPixelBufferRef)_videoFrame->data[3];
+        if (self.delegate && [self.delegate respondsToSelector:@selector(videoDecodec:getVideoPixelBuffer:)]) {
+            [self.delegate videoDecodec:self getVideoPixelBuffer:pixelBuffer];
+            return nil;
+        }
         CMTime presentationTimeStamp = kCMTimeInvalid;
         int64_t originPTS = _videoFrame->pts;
-        int64_t newPTS    = originPTS - baseTime;
+        int64_t newPTS    = originPTS - base_time;
         presentationTimeStamp = CMTimeMakeWithSeconds(current_timestamp + newPTS * av_q2d(videoStream->time_base) , fps);
         CMSampleBufferRef sampleBufferRef = [self convertCVImageBufferRefToCMSampleBufferRef:(CVPixelBufferRef)pixelBuffer
                                                                    withPresentationTimeStamp:presentationTimeStamp];
 
         if (sampleBufferRef) {
-            if ([self.delegate respondsToSelector:@selector(getDecodeVideoDataByFFmpeg:)]) {
-                [self.delegate getDecodeVideoDataByFFmpeg:sampleBufferRef];
+            if ([self.delegate respondsToSelector:@selector(videoDecodec:getVideoSampleBuffer:)]) {
+                [self.delegate videoDecodec:self getVideoSampleBuffer:sampleBufferRef];
             }
 
             CFRelease(sampleBufferRef);
         }
     }
     return NULL;
+}
+
+- (CMSampleBufferRef)convertCVImageBufferRefToCMSampleBufferRef:(CVImageBufferRef)pixelBuffer withPresentationTimeStamp:(CMTime)presentationTimeStamp
+{
+    CVPixelBufferLockBaseAddress(pixelBuffer, 0);
+    CMSampleBufferRef newSampleBuffer = NULL;
+    OSStatus res = 0;
+    
+    CMSampleTimingInfo timingInfo;
+    timingInfo.duration              = kCMTimeInvalid;
+    timingInfo.decodeTimeStamp       = presentationTimeStamp;
+    timingInfo.presentationTimeStamp = presentationTimeStamp;
+    
+    CMVideoFormatDescriptionRef videoInfo = NULL;
+    res = CMVideoFormatDescriptionCreateForImageBuffer(NULL, pixelBuffer, &videoInfo);
+    if (res != 0) {
+        NSLog(@"Create video format description failed --- code: %ld", CodeErrorCodeVideoDecodeCreateVideoFormatError);
+        CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+        return NULL;
+    }
+    
+    res = CMSampleBufferCreateForImageBuffer(kCFAllocatorDefault,
+                                             pixelBuffer,
+                                             true,
+                                             NULL,
+                                             NULL,
+                                             videoInfo,
+                                             &timingInfo, &newSampleBuffer);
+    
+    CFRelease(videoInfo);
+    if (res != 0) {
+        NSLog(@"Create sample buffer failed --- code: %ld", CodeErrorCodeVideoDecodeCreateSampleBufferError);
+        CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+        return NULL;
+        
+    }
+    
+    CVPixelBufferUnlockBaseAddress(pixelBuffer, 0);
+    return newSampleBuffer;
 }
 
 - (Float64)getCurrentTimestamp {

@@ -12,7 +12,20 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class VideoDecodec;
+@protocol VideoDecodecDelegate <NSObject>
+
+- (void)videoDecodec:(VideoDecodec *)videoDecodec getVideoSampleBuffer:(CMSampleBufferRef)samplebuffer;
+
+- (void)videoDecodec:(VideoDecodec *)videoDecodec getVideoPixelBuffer:(CVPixelBufferRef)pixelBuffer;
+
+@end
+
+
 @interface VideoDecodec : NSObject
+
+/* delegate */
+@property (nonatomic, weak) id<VideoDecodecDelegate> delegate;
 
 - (instancetype)initWithFormatContext:(AVFormatContext *)formatContext videoStreamIndex:(int)videoStreamIndex;
 

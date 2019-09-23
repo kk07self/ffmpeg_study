@@ -15,7 +15,9 @@ NS_ASSUME_NONNULL_BEGIN
 @class Decodec;
 @protocol DecodecDelegate <NSObject>
 
-- (void)decodecVideWitd:(Decodec *)decodec samplebuffer:(CMSampleBufferRef)samplebuffer;
+- (void)decodecVide:(Decodec *)decodec samplebuffer:(CMSampleBufferRef)samplebuffer;
+
+- (void)decodecVide:(Decodec *)decodec pixelbuffer:(CVPixelBufferRef)pixelbuffer;
 
 @end
 

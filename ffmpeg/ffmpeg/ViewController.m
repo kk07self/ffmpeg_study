@@ -23,7 +23,7 @@
 #define Base_TB (AVRational){1, 30}
 
 
-@interface ViewController ()
+@interface ViewController ()<DecodecDelegate>
 
 /** decodec */
 @property (nonatomic, strong) Decodec *decodec;
@@ -52,6 +52,7 @@
     self.view.backgroundColor = [UIColor redColor];
     self.previewLayer.contentsGravity = kCAGravityResizeAspect;
     [self.view.layer insertSublayer:_previewLayer atIndex:0];
+    self.decodec.delegate = self;
 }
 
 
@@ -65,17 +66,43 @@
 - (void)play {
     dispatch_source_set_event_handler(self.timer, ^{
         NSLog(@"----isplaying");
-        CVPixelBufferRef pixelBuffer = [self.decodec getPixelBuffer];
-        if (pixelBuffer) {
+        [self.decodec startDecode];
+//        CVPixelBufferRef pixelBuffer = [self.decodec getPixelBuffer];
+//        if (pixelBuffer) {
+//            CIImage *ciImage = [CIImage imageWithCVPixelBuffer:pixelBuffer];
+//            dispatch_async(dispatch_get_main_queue(), ^{
+//                CGImageRef cgImage = [self.context createCGImage:ciImage fromRect:ciImage.extent];
+//                self.previewLayer.contents = (__bridge id _Nullable)cgImage;
+//                CFRelease(cgImage);
+//            });
+//        }
+    });
+    dispatch_resume(_timer);
+}
+
+- (void)decodecVide:(Decodec *)decodec samplebuffer:(CMSampleBufferRef)samplebuffer {
+    if (samplebuffer) {
+        CVPixelBufferRef pixelBuffer = CMSampleBufferGetImageBuffer(samplebuffer);
+        dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
             CIImage *ciImage = [CIImage imageWithCVPixelBuffer:pixelBuffer];
             dispatch_async(dispatch_get_main_queue(), ^{
                 CGImageRef cgImage = [self.context createCGImage:ciImage fromRect:ciImage.extent];
                 self.previewLayer.contents = (__bridge id _Nullable)cgImage;
                 CFRelease(cgImage);
             });
-        }
+        });
+    }
+}
+
+- (void)decodecVide:(Decodec *)decodec pixelbuffer:(CVPixelBufferRef)pixelbuffer {
+    dispatch_async(dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0), ^{
+        CIImage *ciImage = [CIImage imageWithCVPixelBuffer:pixelbuffer];
+        dispatch_async(dispatch_get_main_queue(), ^{
+            CGImageRef cgImage = [self.context createCGImage:ciImage fromRect:ciImage.extent];
+            self.previewLayer.contents = (__bridge id _Nullable)cgImage;
+            CFRelease(cgImage);
+        });
     });
-    dispatch_resume(_timer);
 }
 
 
@@ -100,7 +127,7 @@
     if (!_timer) {
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
-        dispatch_source_set_timer(_timer, DISPATCH_TIME_NOW, 25*NSEC_PER_MSEC, 0);
+        dispatch_source_set_timer(_timer, DISPATCH_TIME_NOW, 10*NSEC_PER_MSEC, 0);
     }
     return _timer;
 }
