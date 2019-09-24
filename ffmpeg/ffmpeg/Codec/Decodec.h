@@ -12,7 +12,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
-@class Decodec;
+@class Decodec, VideoFrame;
 @protocol DecodecDelegate <NSObject>
 
 - (void)decodecVide:(Decodec *)decodec samplebuffer:(CMSampleBufferRef)samplebuffer;
@@ -31,10 +31,7 @@ NS_ASSUME_NONNULL_BEGIN
 /* desc */
 @property (nonatomic, assign) id<DecodecDelegate> delegate;
 
-- (void)startDecode;
-- (void)pauseDecode;
-
-- (CVPixelBufferRef)getPixelBuffer;
+- (VideoFrame *)peekVideoFrame;
 
 @end
 

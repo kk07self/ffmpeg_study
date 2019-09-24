@@ -23,6 +23,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (int)getVideoStreamIndex;
 
+- (AVPacket *)readerPacket;
+
 @end
 
 NS_ASSUME_NONNULL_END

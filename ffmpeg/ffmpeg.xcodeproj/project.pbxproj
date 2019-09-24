@@ -39,7 +39,7 @@
 		D757855723210A5C00AA7191 /* test.MP4 in Resources */ = {isa = PBXBuildFile; fileRef = D757855423210A5C00AA7191 /* test.MP4 */; };
 		D7677FE023263F240012558E /* libx264.a in Frameworks */ = {isa = PBXBuildFile; fileRef = D7677FDF23263F240012558E /* libx264.a */; };
 		D77F72962338D16000642A69 /* DisplayGLView.m in Sources */ = {isa = PBXBuildFile; fileRef = D77F72952338D16000642A69 /* DisplayGLView.m */; };
-		D77F72992338D25D00642A69 /* VideoFrame.m in Sources */ = {isa = PBXBuildFile; fileRef = D77F72982338D25D00642A69 /* VideoFrame.m */; };
+		D7BD35BF233A055F007DAA35 /* OpenGLES.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = D7BD35BE233A055F007DAA35 /* OpenGLES.framework */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -205,8 +205,7 @@
 		D7677FDF23263F240012558E /* libx264.a */ = {isa = PBXFileReference; lastKnownFileType = archive.ar; path = libx264.a; sourceTree = "<group>"; };
 		D77F72942338D16000642A69 /* DisplayGLView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = DisplayGLView.h; sourceTree = "<group>"; };
 		D77F72952338D16000642A69 /* DisplayGLView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = DisplayGLView.m; sourceTree = "<group>"; };
-		D77F72972338D25D00642A69 /* VideoFrame.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = VideoFrame.h; sourceTree = "<group>"; };
-		D77F72982338D25D00642A69 /* VideoFrame.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = VideoFrame.m; sourceTree = "<group>"; };
+		D7BD35BE233A055F007DAA35 /* OpenGLES.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = OpenGLES.framework; path = System/Library/Frameworks/OpenGLES.framework; sourceTree = SDKROOT; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -219,6 +218,7 @@
 				D757854E2321022500AA7191 /* libGPUImage.a in Frameworks */,
 				4B3C27B7230C3BE7003DB395 /* VideoToolbox.framework in Frameworks */,
 				4B3C27B5230C3BD9003DB395 /* CoreMedia.framework in Frameworks */,
+				D7BD35BF233A055F007DAA35 /* OpenGLES.framework in Frameworks */,
 				4B3C27B3230C3BC1003DB395 /* libiconv.2.4.0.tbd in Frameworks */,
 				4B3C2733230C3A2E003DB395 /* libavdevice.a in Frameworks */,
 				D7677FE023263F240012558E /* libx264.a in Frameworks */,
@@ -254,6 +254,7 @@
 		4B3C2710230C39CA003DB395 /* ffmpeg */ = {
 			isa = PBXGroup;
 			children = (
+				D7BD35BD2339FB61007DAA35 /* Preview */,
 				4B8EEC2B2322AEB70078FC10 /* Codec */,
 				D757855223210A5900AA7191 /* test2.MOV */,
 				D757855323210A5A00AA7191 /* test1.MOV */,
@@ -270,8 +271,6 @@
 				4B3C271C230C39CB003DB395 /* LaunchScreen.storyboard */,
 				4B3C271F230C39CB003DB395 /* Info.plist */,
 				4B3C2720230C39CB003DB395 /* main.m */,
-				D77F72942338D16000642A69 /* DisplayGLView.h */,
-				D77F72952338D16000642A69 /* DisplayGLView.m */,
 			);
 			path = ffmpeg;
 			sourceTree = "<group>";
@@ -469,6 +468,7 @@
 		4B3C27AF230C3BAD003DB395 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				D7BD35BE233A055F007DAA35 /* OpenGLES.framework */,
 				D7578550232104EA00AA7191 /* libbz2.1.0.5.tbd */,
 				D757854D2321022500AA7191 /* libGPUImage.a */,
 				4B3C27B6230C3BE7003DB395 /* VideoToolbox.framework */,
@@ -500,8 +500,6 @@
 				4B8EEC442322B0950078FC10 /* DecodeOptions.h */,
 				4B8EEC452322B0950078FC10 /* DecodeOptions.m */,
 				4B8EEC472322B46B0078FC10 /* CodecErrorCode.h */,
-				D77F72972338D25D00642A69 /* VideoFrame.h */,
-				D77F72982338D25D00642A69 /* VideoFrame.m */,
 			);
 			path = Codec;
 			sourceTree = "<group>";
@@ -530,6 +528,15 @@
 				D7677FDF23263F240012558E /* libx264.a */,
 			);
 			path = lib;
+			sourceTree = "<group>";
+		};
+		D7BD35BD2339FB61007DAA35 /* Preview */ = {
+			isa = PBXGroup;
+			children = (
+				D77F72942338D16000642A69 /* DisplayGLView.h */,
+				D77F72952338D16000642A69 /* DisplayGLView.m */,
+			);
+			path = Preview;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -609,7 +616,6 @@
 				4B8EEC342322AEFD0078FC10 /* AudioDecodec.m in Sources */,
 				4B8EEC462322B0950078FC10 /* DecodeOptions.m in Sources */,
 				4B8EEC372322AF1E0078FC10 /* DemuxMedia.m in Sources */,
-				D77F72992338D25D00642A69 /* VideoFrame.m in Sources */,
 				4B3C2716230C39CA003DB395 /* ViewController.m in Sources */,
 				4B3C2721230C39CB003DB395 /* main.m in Sources */,
 				4B8EEC402322AF510078FC10 /* AudioCodec.m in Sources */,

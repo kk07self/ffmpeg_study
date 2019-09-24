@@ -26,6 +26,8 @@ static const int kCodecSupportMaxHeight  = 2160;
     int _video_width, _video_height, _video_fps;
     
     dispatch_queue_t _demuxQueue;
+    
+    AVPacket _packet;
 }
 
 @end
@@ -44,6 +46,7 @@ static const int kCodecSupportMaxHeight  = 2160;
         [self preparFormatContext:filePath];
 //        [self preparVideoStreams];
 //        [self preparAudioStreams];
+        av_init_packet(&_packet);
         _demuxQueue = dispatch_queue_create("parse_queue", DISPATCH_QUEUE_SERIAL);
     }
     return self;
@@ -242,10 +245,11 @@ static const int kCodecSupportMaxHeight  = 2160;
     }
 }
 
+
 #pragma mark - demux
 
 - (void)readPacket:(void (^)(BOOL, BOOL, AVPacket))handler {
-    dispatch_async(_demuxQueue, ^{
+//    dispatch_async(_demuxQueue, ^{
         AVPacket packet;
         av_init_packet(&packet);
         int status = av_read_frame(self.formatContext, &packet);
@@ -262,7 +266,15 @@ static const int kCodecSupportMaxHeight  = 2160;
             handler(packet.stream_index == self->_video_stream_index ? YES : NO, NO, packet);
         }
         av_packet_unref(&packet);
-    });
+//    });
+}
+
+- (AVPacket *)readerPacket {
+    int status = av_read_frame(self.formatContext, &_packet);
+    if (status < 0 || _packet.size < 0) {
+        return NULL;
+    }
+    return &_packet;
 }
 
 

@@ -23,7 +23,55 @@ static int init_hardware_decoder(AVCodecContext *ctx, const enum AVHWDeviceType 
     return err;
 }
 
+// copy 数据
+static NSData * copyFrameData(UInt8 *src, int linesize, int width, int height)
+{
+    width = MIN(linesize, width);
+    NSMutableData *md = [NSMutableData dataWithLength: width * height];
+    Byte *dst = md.mutableBytes;
+    for (NSUInteger i = 0; i < height; ++i) {
+        memcpy(dst, src, width);
+        dst += width;
+        src += linesize;
+    }
+    return md;
+}
 
+
+#pragma mark - VideoFrame 帧数据格式化
+/// 帧数据基类
+@interface VideoFrame()
+@property (readwrite, nonatomic) VideoFrameFormat format;
+@property (readwrite, nonatomic) NSUInteger width;
+@property (readwrite, nonatomic) NSUInteger height;
+@end
+@implementation VideoFrame
+@end
+
+/// 帧数据RGB格式
+@interface VideoFrameRGB()
+@property (readwrite, nonatomic) NSUInteger linesize;
+@property (readwrite, nonatomic, strong) NSData *rgb;
+@end
+@implementation VideoFrameRGB
+@end
+
+/// 帧数据YUV格式
+@interface VideoFrameYUV()
+@property (readwrite, nonatomic, strong) NSData *luma;
+@property (readwrite, nonatomic, strong) NSData *chromaB;
+@property (readwrite, nonatomic, strong) NSData *chromaR;
+@end
+@implementation VideoFrameYUV
+
+- (void)dealloc {
+    NSLog(@"dealloc: %@", self);
+}
+
+@end
+
+
+#pragma mark - VideoDecodec 视频解码器
 @interface VideoDecodec()
 
 {
@@ -43,8 +91,14 @@ static int init_hardware_decoder(AVCodecContext *ctx, const enum AVHWDeviceType 
 /** video stream index */
 @property (nonatomic, assign) int videoStreamIndex;
 
-/* desc */
+/* 帧格式转换器 */
 @property (nonatomic, assign) struct SwsContext *swsContext;
+
+/* 帧格式转换桥接数据 */
+@property (nonatomic, assign) AVPicture picture;
+
+/* frameFormat */
+@property (nonatomic, assign) VideoFrameFormat videoFrameFormat;
 
 @end
 
@@ -56,6 +110,7 @@ static int init_hardware_decoder(AVCodecContext *ctx, const enum AVHWDeviceType 
     if (self = [super init]) {
         _formatContext = formatContext;
         _videoStreamIndex = videoStreamIndex;
+        _videoFrameFormat = VideoFrameFormatYUV;
         [self initDecodec];
     }
     return self;
@@ -116,7 +171,7 @@ static int init_hardware_decoder(AVCodecContext *ctx, const enum AVHWDeviceType 
         return NULL;
     }
     
-//    // 初始化硬解码器
+    // 初始化硬解码器
 //    ret = init_hardware_decoder(codecContext, type);
 //    if (ret < 0){
 //        NSLog(@"hard ware decoder init faild --- code: %ld", CodecErrorCodeVideoHardWareDecoderInitError);
@@ -135,9 +190,27 @@ static int init_hardware_decoder(AVCodecContext *ctx, const enum AVHWDeviceType 
 }
 
 
+- (void)setupSwsContext {
+    BOOL success = avpicture_alloc(&_picture, AV_PIX_FMT_RGBA, _videoDecodecContext->width, _videoDecodecContext->height) == 0;
+    if (success == NO) {
+        return;
+    }
+    if (_swsContext == NULL) {
+        _swsContext = sws_getCachedContext(_swsContext,
+        _videoDecodecContext->width,
+        _videoDecodecContext->height,
+        _videoDecodecContext->pix_fmt,
+        _videoDecodecContext->width,
+        _videoDecodecContext->height,
+        AV_PIX_FMT_RGBA,
+        SWS_FAST_BILINEAR,
+        NULL, NULL, NULL);
+    }
+}
+
 #pragma mark - decodec
 
-- (CVPixelBufferRef)decodecPacket:(AVPacket)packet; {
+- (VideoFrame *)decodecPacket:(AVPacket)packet; {
     
     if (packet.flags == 1 && isFindIDR == NO) {
         isFindIDR = YES;
@@ -153,6 +226,33 @@ static int init_hardware_decoder(AVCodecContext *ctx, const enum AVHWDeviceType 
     // 接收解码器后的数据
     while (0 == avcodec_receive_frame(_videoDecodecContext, _videoFrame))
     {
+        VideoFrame *frame;
+        if (_videoFrameFormat == VideoFrameFormatYUV) {
+            // 转YUV
+            VideoFrameYUV *yuvFrame = [[VideoFrameYUV alloc] init];
+            yuvFrame.luma = copyFrameData(_videoFrame->data[0], _videoFrame->linesize[0], _videoDecodecContext->width, _videoDecodecContext->height);
+            yuvFrame.chromaB = copyFrameData(_videoFrame->data[1], _videoFrame->linesize[1], _videoDecodecContext->width/2, _videoDecodecContext->height/2);
+            yuvFrame.chromaR = copyFrameData(_videoFrame->data[2], _videoFrame->linesize[2], _videoDecodecContext->width/2, _videoDecodecContext->height/2);
+            frame = yuvFrame;
+        } else {
+            // 转RGB
+//            if (_swsContext == NULL) {
+//                [self setupSwsContext];
+//            }
+//            VideoFrameRGB *rgbFrame = [[VideoFrameRGB alloc] init];
+////            AVFrame newframe;
+//            sws_scale(_swsContext, (const uint8_t **)_videoFrame->data, _videoFrame->linesize, 0, _videoDecodecContext->height,
+//            _picture.data,
+//            _picture.linesize);
+//            rgbFrame.linesize = _picture.linesize[0];
+//            rgbFrame.rgb = [NSData dataWithBytes:_picture.data[0] length:rgbFrame.linesize*_videoDecodecContext->height];
+//            frame = rgbFrame;
+        }
+        frame.format = _videoFrameFormat;
+        frame.width = _videoFrame->width;
+        frame.height = _videoFrame->height;
+        return frame;
+        
         CVPixelBufferRef pixelBuffer = (CVPixelBufferRef)_videoFrame->data[3];
         if (self.delegate && [self.delegate respondsToSelector:@selector(videoDecodec:getVideoPixelBuffer:)]) {
             [self.delegate videoDecodec:self getVideoPixelBuffer:pixelBuffer];
@@ -175,6 +275,8 @@ static int init_hardware_decoder(AVCodecContext *ctx, const enum AVHWDeviceType 
     }
     return NULL;
 }
+
+
 
 - (CMSampleBufferRef)convertCVImageBufferRefToCMSampleBufferRef:(CVImageBufferRef)pixelBuffer withPresentationTimeStamp:(CMTime)presentationTimeStamp
 {
@@ -235,5 +337,6 @@ static int init_hardware_decoder(AVCodecContext *ctx, const enum AVHWDeviceType 
     }
     return _swsContext;
 }
+
 
 @end

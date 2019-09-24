@@ -18,7 +18,7 @@
 #include "libswresample/swresample.h"
 #include "libavutil/opt.h"
 
-@interface Decodec()<VideoDecodecDelegate>
+@interface Decodec()
 
 /** demux */
 @property (nonatomic, strong) DemuxMedia *demux;
@@ -45,6 +45,9 @@
 /* 缓存队列 */
 @property (nonatomic, strong) dispatch_queue_t cacheQueue;
 
+/* 缓存的帧数据 */
+@property (nonatomic, strong) NSMutableArray *cacheVideoFrames;
+
 @end
 
 @implementation Decodec
@@ -55,72 +58,146 @@
         _filePath = filePath;
         _cacheQueue = dispatch_queue_create("_cacheQueue", DISPATCH_QUEUE_SERIAL);
         [self demux];
-        self.videoDecodec.delegate = self;
+//        self.videoDecodec.delegate = self;
+        [self videoDecodec];
     }
     return self;
 }
 
 
-- (void)startDecode {
-    // 获取packect
-    [self.demux readPacket:^(BOOL isVideoPacket, BOOL isReadFinished, AVPacket packet) {
-        if (isReadFinished) {
-            return ;
-        }
-        if (isVideoPacket) {
-            // 解码
-            [self.videoDecodec decodecPacket:packet];
-        }
-    }];
-}
+//- (void)startDecode {
+//    // 获取packect
+//    [self.demux readPacket:^(BOOL isVideoPacket, BOOL isReadFinished, AVPacket packet) {
+//        if (isReadFinished) {
+//            return ;
+//        }
+//        if (isVideoPacket) {
+//            // 解码
+//            VideoFrame *frame = [self.videoDecodec decodecPacket:packet];
+//            [self appendVideoFrame:frame];
+//        }
+//    }];
+//}
+//
+//- (void)videoDecodec:(VideoDecodec *)videoDecodec getVideoSampleBuffer:(CMSampleBufferRef)samplebuffer {
+//    if (self.delegate && [self.delegate respondsToSelector:@selector(decodecVide:samplebuffer:)]) {
+//        [self.delegate decodecVide:self samplebuffer:samplebuffer];
+//    }
+//}
+//
+//- (void)videoDecodec:(VideoDecodec *)videoDecodec getVideoPixelBuffer:(CVPixelBufferRef)pixelBuffer {
+//    if (self.delegate && [self.delegate respondsToSelector:@selector(decodecVide:pixelbuffer:)]) {
+//        [self.delegate decodecVide:self pixelbuffer:pixelBuffer];
+//    }
+//}
 
-- (void)videoDecodec:(VideoDecodec *)videoDecodec getVideoSampleBuffer:(CMSampleBufferRef)samplebuffer {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(decodecVide:samplebuffer:)]) {
-        [self.delegate decodecVide:self samplebuffer:samplebuffer];
+- (VideoFrame *)peekVideoFrame {
+    AVPacket *packet = [self.demux readerPacket];
+    // 没有数据了
+    if (!packet) {
+       self.isFinished = YES;
+       return nil;
     }
-}
-
-- (void)videoDecodec:(VideoDecodec *)videoDecodec getVideoPixelBuffer:(CVPixelBufferRef)pixelBuffer {
-    if (self.delegate && [self.delegate respondsToSelector:@selector(decodecVide:pixelbuffer:)]) {
-        [self.delegate decodecVide:self pixelbuffer:pixelBuffer];
+    // 非视频帧
+    if (packet->stream_index != [self.demux getVideoStreamIndex]) {
+        return [self peekVideoFrame];
     }
-}
-
-
-- (CVPixelBufferRef)getPixelBuffer {
-    if (self.frames.count > 0) {
-        if (self.frames.count < 5) {
-            [self cachecPixelBuffer];
+    // 解码
+    VideoFrame *frame = [self.videoDecodec decodecPacket:*packet];
+    av_packet_unref(packet);
+    if (!frame) {
+        return [self peekVideoFrame];
+    }
+    return frame;
+    
+    VideoFrame *videoFrame;
+    if (self.cacheVideoFrames.count > 0) {
+        videoFrame = [self getVideoFrame];
+        if (self.cacheVideoFrames.count < 5) {
+            // 异步缓存
+            [self asyncCacheVideoFrames];
         }
-        return [self pual];
     } else {
-        [self cachecPixelBuffer];
-        while (self.frames.count < 1 && !_isFinished) {
-            // 睡眠等待缓存
-            [NSThread sleepForTimeInterval:0.01];
+        // 同步缓存
+        if (self.isFinished) {
+            return nil;
         }
-        return [self pual];
+        [self syncCacheVideoFrames];
+        return [self peekVideoFrame];
+//        while (1) {
+//            [NSThread sleepForTimeInterval:0.01];
+//            continue;
+//        }
     }
+    return videoFrame;
 }
 
-#pragma mark - buffers manager
-- (CVPixelBufferRef)pual {
+
+#pragma mark - video frames manager
+- (void)appendVideoFrame:(VideoFrame *)videoFrame {
+    if (videoFrame == nil) {
+        return;
+    }
     // 需要枷锁
     dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
-    CVPixelBufferRef pixbuffer = (__bridge CVPixelBufferRef)(self.frames.firstObject);
-    [self.frames removeObject:(__bridge id _Nonnull)(pixbuffer)];
+    [self.cacheVideoFrames addObject:videoFrame];
+    NSLog(@"cacheVideoFrames count: %ld", self.cacheVideoFrames.count);
     // 解锁
     dispatch_semaphore_signal(self.semaphore);
-    return pixbuffer;
 }
 
-- (void)cachecPixelBuffer {
-    
+
+- (VideoFrame *)getVideoFrame {
+    // 需要枷锁
+    dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+    VideoFrame *frame = self.cacheVideoFrames.firstObject;
+    if (frame) {
+        [self.cacheVideoFrames removeObject:frame];
+    }
+    // 解锁
+    dispatch_semaphore_signal(self.semaphore);
+    return frame;
+}
+
+// 异步缓存
+- (void)asyncCacheVideoFrames {
     dispatch_async(_cacheQueue, ^{
-        while (self.frames.count < 5) {
-            
-        }
+        [self currentQueueCacheVideoFrames];
     });
+}
+
+// 同步缓存
+- (void)syncCacheVideoFrames {
+    dispatch_sync(_cacheQueue, ^{
+        [self currentQueueCacheVideoFrames];
+    });
+}
+
+// 当前队列线程缓存
+- (void)currentQueueCacheVideoFrames {
+    __block NSInteger videoFramesCount = self.frames.count;
+    while (videoFramesCount < 5) {
+        // 获取packect
+        __weak typeof(self) weakSelf = self;
+        AVPacket *packet = [self.demux readerPacket];
+        // 没有数据了
+        if (!packet) {
+            self.isFinished = YES;
+            break;
+        }
+        // 非视频帧
+        if (packet->stream_index != [self.demux getVideoStreamIndex]) {
+            continue;
+        }
+        // 解码
+        VideoFrame *frame = [weakSelf.videoDecodec decodecPacket:*packet];
+        [weakSelf appendVideoFrame:frame];
+        av_packet_unref(packet);
+        dispatch_semaphore_wait(self.semaphore, DISPATCH_TIME_FOREVER);
+        videoFramesCount = weakSelf.cacheVideoFrames.count;
+        // 解锁
+        dispatch_semaphore_signal(self.semaphore);
+    }
 }
 
 
@@ -152,6 +229,13 @@
         _semaphore = dispatch_semaphore_create(1);
     }
     return _semaphore;
+}
+
+- (NSMutableArray *)cacheVideoFrames {
+    if (!_cacheVideoFrames) {
+        _cacheVideoFrames = [NSMutableArray array];
+    }
+    return _cacheVideoFrames;
 }
 
 @end

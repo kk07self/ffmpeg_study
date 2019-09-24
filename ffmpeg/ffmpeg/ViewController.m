@@ -17,8 +17,8 @@
 #include <libswresample/swresample.h>
 
 #import "GPUImage.h"
-
 #import "Decodec.h"
+#import "DisplayGLView.h"
 
 #define Base_TB (AVRational){1, 30}
 
@@ -40,6 +40,8 @@
 /* desc */
 @property (nonatomic, strong) dispatch_source_t timer;
 
+/* desc */
+@property (nonatomic, strong) DisplayGLView *displayView;
 @end
 
 @implementation ViewController
@@ -50,9 +52,9 @@
     _decodec = [[Decodec alloc] initWithFilePath:filePath options:[[DecodeOptions alloc] init]];
     
     self.view.backgroundColor = [UIColor redColor];
-    self.previewLayer.contentsGravity = kCAGravityResizeAspect;
-    [self.view.layer insertSublayer:_previewLayer atIndex:0];
-    self.decodec.delegate = self;
+//    self.previewLayer.contentsGravity = kCAGravityResizeAspect;
+//    [self.view.layer insertSublayer:_previewLayer atIndex:0];
+//    self.decodec.delegate = self;
 }
 
 
@@ -60,13 +62,24 @@
     _isplaying = !_isplaying;
     if (_isplaying) {
         [self play];
+    } else {
+        dispatch_suspend(self.timer);
     }
 }
 
 - (void)play {
     dispatch_source_set_event_handler(self.timer, ^{
         NSLog(@"----isplaying");
-        [self.decodec startDecode];
+        VideoFrame *frame = [self.decodec peekVideoFrame];
+        NSLog(@"video_frame: %@", frame);
+        if (frame == nil) {
+            NSLog(@"--- 播放完成");
+            dispatch_suspend(self.timer);
+            return ;
+        }
+        dispatch_async(dispatch_get_main_queue(), ^{
+            [self.displayView render:frame];
+        });
 //        CVPixelBufferRef pixelBuffer = [self.decodec getPixelBuffer];
 //        if (pixelBuffer) {
 //            CIImage *ciImage = [CIImage imageWithCVPixelBuffer:pixelBuffer];
@@ -127,9 +140,18 @@
     if (!_timer) {
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
-        dispatch_source_set_timer(_timer, DISPATCH_TIME_NOW, 10*NSEC_PER_MSEC, 0);
+        dispatch_source_set_timer(_timer, DISPATCH_TIME_NOW, 30*NSEC_PER_MSEC, 0);
     }
     return _timer;
+}
+
+- (DisplayGLView *)displayView {
+    if (!_displayView) {
+        _displayView = [[DisplayGLView alloc] initWithFrame:self.view.bounds videoFormat:VideoFrameFormatYUV];
+        _displayView.contentMode = UIViewContentModeScaleAspectFit;
+        [self.view addSubview:_displayView];
+    }
+    return _displayView;
 }
 
 @end

@@ -13,6 +13,41 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+#pragma mark - VideoFrame 格式化帧数据
+typedef enum {
+        
+    VideoFrameFormatRGB,
+    VideoFrameFormatYUV,
+    
+} VideoFrameFormat;
+
+
+/// 帧数据基类
+@interface VideoFrame : NSObject
+
+@property (readonly, nonatomic) VideoFrameFormat format;
+@property (readonly, nonatomic) NSUInteger width;
+@property (readonly, nonatomic) NSUInteger height;
+
+@end
+
+
+/// 帧数据RGB格式
+@interface VideoFrameRGB : VideoFrame
+@property (readonly, nonatomic) NSUInteger linesize;
+@property (readonly, nonatomic, strong) NSData *rgb;
+@end
+
+
+/// 帧数据YUV格式
+@interface VideoFrameYUV : VideoFrame
+@property (readonly, nonatomic, strong) NSData *luma;
+@property (readonly, nonatomic, strong) NSData *chromaB;
+@property (readonly, nonatomic, strong) NSData *chromaR;
+@end
+
+
+#pragma mark - VideoDecodec 视频解码器
 @class VideoDecodec;
 @protocol VideoDecodecDelegate <NSObject>
 
@@ -30,7 +65,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (instancetype)initWithFormatContext:(AVFormatContext *)formatContext videoStreamIndex:(int)videoStreamIndex;
 
-- (CVPixelBufferRef)decodecPacket:(AVPacket)packet;
+- (VideoFrame *)decodecPacket:(AVPacket)packet;
 
 @end
 
