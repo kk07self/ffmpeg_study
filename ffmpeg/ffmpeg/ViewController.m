@@ -69,9 +69,9 @@
 
 - (void)play {
     dispatch_source_set_event_handler(self.timer, ^{
-        NSLog(@"----isplaying");
+//        NSLog(@"----isplaying");
         VideoFrame *frame = [self.decodec peekVideoFrame];
-        NSLog(@"video_frame: %@", frame);
+//        NSLog(@"video_frame: %@", frame);
         if (frame == nil) {
             NSLog(@"--- 播放完成");
             dispatch_suspend(self.timer);
@@ -140,7 +140,7 @@
     if (!_timer) {
         dispatch_queue_t queue = dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0);
         _timer = dispatch_source_create(DISPATCH_SOURCE_TYPE_TIMER, 0, 0, queue);
-        dispatch_source_set_timer(_timer, DISPATCH_TIME_NOW, 30*NSEC_PER_MSEC, 0);
+        dispatch_source_set_timer(_timer, DISPATCH_TIME_NOW, 33*NSEC_PER_MSEC, 0);
     }
     return _timer;
 }

@@ -54,21 +54,45 @@ NSString *const yuvFragmentShaderString = SHADER_STRING
  
  void main()
  {
-     highp float y = texture2D(s_texture_y, v_texcoord).r;
-     highp float u = texture2D(s_texture_u, v_texcoord).r - 0.5;
-     highp float v = texture2D(s_texture_v, v_texcoord).r - 0.5;
-     
-     highp float r = y +             1.402 * v;
-     highp float g = y - 0.344 * u - 0.714 * v;
-     highp float b = y + 1.772 * u;
-     
-     gl_FragColor = vec4(r,g,b,1.0);
+    highp float y = texture2D(s_texture_y, v_texcoord).r - (16.0/255.0);
+    highp float u = texture2D(s_texture_u, v_texcoord).r - 0.5;
+    highp float v = texture2D(s_texture_v, v_texcoord).r - 0.5;
+    lowp vec3 rgb;
+    mediump vec3 yuv;
+    yuv = vec3(y, u, v);
+    rgb = mat3(1.164,  1.164, 1.164,
+                0.0, -0.213, 2.112,
+               1.793, -0.533,   0.0) * yuv;
+
+    gl_FragColor = vec4(rgb,1.0);
  }
 );
+
+//// BT.601, which is the standard for SDTV.
+//GLfloat kColorConversion601Default[] = {
+//    1.164,  1.164, 1.164,
+//    0.0, -0.392, 2.017,
+//    1.596, -0.813,   0.0,
+//};
+//
+//// BT.601 full range (ref: http://www.equasys.de/colorconversion.html)
+//GLfloat kColorConversion601FullRangeDefault[] = {
+//    1.0,    1.0,    1.0,
+//    0.0,    -0.343, 1.765,
+//    1.4,    -0.711, 0.0,
+//};
+//
+//// BT.709, which is the standard for HDTV.
+//GLfloat kColorConversion709Default[] = {
+//    1.164,  1.164, 1.164,
+//    0.0, -0.213, 2.112,
+//    1.793, -0.533,   0.0,
+//};
 
 //highp float r = y +             1.402 * v;
 //highp float g = y - 0.344 * u - 0.714 * v;
 //highp float b = y + 1.772 * u;
+
 
 static BOOL validateProgram(GLuint prog)
 {
@@ -285,13 +309,13 @@ static void mat4f_LoadOrtho(float left, float right, float bottom, float top, fl
 - (void) setFrame: (VideoFrame *) frame
 {
     VideoFrameYUV *yuvFrame = (VideoFrameYUV *)frame;
-    NSLog(@"frameWidth: %ld, frameHeight: %ld", frame.width, frame.height);
-    NSLog(@"yuvFrame.luma.length: %ld, yuvFrame.width * yuvFrame.height: %ld", yuvFrame.luma.length, yuvFrame.width * yuvFrame.height);
-    NSLog(@"yuvFrame.chromaB.length: %ld, yuvFrame.width * yuvFrame.height: %ld", yuvFrame.chromaB.length, yuvFrame.width * yuvFrame.height/4);
-    NSLog(@"yuvFrame.chromaR.length: %ld, yuvFrame.width * yuvFrame.height: %ld", yuvFrame.chromaR.length, yuvFrame.width * yuvFrame.height/4);
-//    assert(yuvFrame.luma.length == yuvFrame.width * yuvFrame.height);
-//    assert(yuvFrame.chromaB.length == (yuvFrame.width * yuvFrame.height) / 4);
-//    assert(yuvFrame.chromaR.length == (yuvFrame.width * yuvFrame.height) / 4);
+//    NSLog(@"frameWidth: %ld, frameHeight: %ld", frame.width, frame.height);
+//    NSLog(@"yuvFrame.luma.length: %ld, yuvFrame.width * yuvFrame.height: %ld", yuvFrame.luma.length, yuvFrame.width * yuvFrame.height);
+//    NSLog(@"yuvFrame.chromaB.length: %ld, yuvFrame.width * yuvFrame.height: %ld", yuvFrame.chromaB.length, yuvFrame.width * yuvFrame.height/4);
+//    NSLog(@"yuvFrame.chromaR.length: %ld, yuvFrame.width * yuvFrame.height: %ld", yuvFrame.chromaR.length, yuvFrame.width * yuvFrame.height/4);
+    assert(yuvFrame.luma.length == yuvFrame.width * yuvFrame.height);
+    assert(yuvFrame.chromaB.length == (yuvFrame.width * yuvFrame.height) / 4);
+    assert(yuvFrame.chromaR.length == (yuvFrame.width * yuvFrame.height) / 4);
 
     const NSUInteger frameWidth = frame.width;
     const NSUInteger frameHeight = frame.height;

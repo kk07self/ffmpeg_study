@@ -65,7 +65,7 @@ static NSData * copyFrameData(UInt8 *src, int linesize, int width, int height)
 @implementation VideoFrameYUV
 
 - (void)dealloc {
-    NSLog(@"dealloc: %@", self);
+//    NSLog(@"dealloc: %@", self);
 }
 
 @end
@@ -142,21 +142,21 @@ static NSData * copyFrameData(UInt8 *src, int linesize, int width, int height)
     AVCodec *codec = NULL;
     int ret = 0;
     // 硬件解码器
-//    const char *codecName = av_hwdevice_get_type_name(AV_HWDEVICE_TYPE_VIDEOTOOLBOX);
-//    enum AVHWDeviceType type = av_hwdevice_find_type_by_name(codecName);
-//    if (type != AV_HWDEVICE_TYPE_VIDEOTOOLBOX) {
-//        NSLog(@"not found videotoolbox --- code: %ld", CodecErrorCodeVideoNotFoundHardWare);
-//        return NULL;
-//    }
-//
-//    // 查找最好留解码器
-//    ret = av_find_best_stream(_formatContext, AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0);
-//    if (ret < 0) {
-//        NSLog(@"av_find_best_stream faild --- code: %ld", CodecErrorCodeVideoNotFoundBestStream);
-//        return NULL;
-//    }
+    const char *codecName = av_hwdevice_get_type_name(AV_HWDEVICE_TYPE_VIDEOTOOLBOX);
+    enum AVHWDeviceType type = av_hwdevice_find_type_by_name(codecName);
+    if (type != AV_HWDEVICE_TYPE_VIDEOTOOLBOX) {
+        NSLog(@"not found videotoolbox --- code: %ld", CodecErrorCodeVideoNotFoundHardWare);
+        return NULL;
+    }
+
+    // 查找最好留解码器
+    ret = av_find_best_stream(_formatContext, AVMEDIA_TYPE_VIDEO, -1, -1, &codec, 0);
+    if (ret < 0) {
+        NSLog(@"av_find_best_stream faild --- code: %ld", CodecErrorCodeVideoNotFoundBestStream);
+        return NULL;
+    }
     
-    codec = avcodec_find_decoder(stream->codecpar->codec_id);
+//    codec = avcodec_find_decoder(stream->codecpar->codec_id);
     // 用解码器初始化解码器上下文
     codecContext = avcodec_alloc_context3(codec);
     if (!codecContext){
