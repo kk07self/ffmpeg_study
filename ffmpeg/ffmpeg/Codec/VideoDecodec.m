@@ -29,11 +29,25 @@ static NSData * copyFrameData(UInt8 *src, int linesize, int width, int height)
     width = MIN(linesize, width);
     NSMutableData *md = [NSMutableData dataWithLength: width * height];
     Byte *dst = md.mutableBytes;
+    
+    size_t min = 255, max = 0;
+    
     for (NSUInteger i = 0; i < height; ++i) {
-        memcpy(dst, src, width);
-        dst += width;
-        src += linesize;
+        for (NSInteger j = 0; j < width; ++j) {
+            memcpy(dst, src, 1);
+            dst += 1;
+            src += 1;
+            
+            size_t current = dst[-1];
+            min = MIN(current, min);
+            max = MAX(current, max);
+        }
+        if (linesize > width) {
+            src += (linesize - width);
+        }
     }
+    
+    NSLog(@"min: %zu, max: %zu", min, max);
     return md;
 }
 

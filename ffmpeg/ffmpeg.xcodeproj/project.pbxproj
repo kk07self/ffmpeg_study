@@ -768,7 +768,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 9U2KRZU6GT;
+				DEVELOPMENT_TEAM = HA5G797698;
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/../framework\"";
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/ffmpeg/include",
@@ -798,7 +798,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = 9U2KRZU6GT;
+				DEVELOPMENT_TEAM = HA5G797698;
 				FRAMEWORK_SEARCH_PATHS = "\"$(SRCROOT)/../framework\"";
 				HEADER_SEARCH_PATHS = (
 					"$(PROJECT_DIR)/ffmpeg/include",
